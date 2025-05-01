@@ -12,7 +12,7 @@ const Navbar = () => {
       <div className="container mx-auto px-4 flex justify-between items-center">
         {/* Logo */}
         <Link to="/" className="font-serif text-2xl font-semibold">
-          Katherine Rossil
+          Katherine Rossil <span className="text-brand-pink text-xl">Atelier & Vintage</span>
         </Link>
 
         {/* Desktop Navigation */}

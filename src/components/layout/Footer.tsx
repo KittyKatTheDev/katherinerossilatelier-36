@@ -10,7 +10,7 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
           {/* Brand Column */}
           <div>
-            <h3 className="font-serif text-xl mb-4">Katherine Rossil</h3>
+            <h3 className="font-serif text-xl mb-4">Katherine Rossil <span className="text-brand-pink">Atelier & Vintage</span></h3>
             <p className="text-sm text-gray-600 mb-4">
               Unique atelier and vintage pieces curated for the modern woman.
             </p>
