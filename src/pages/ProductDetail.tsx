@@ -6,14 +6,27 @@ import { Button } from '@/components/ui/button';
 import { Heart } from 'lucide-react';
 import { products } from '@/data/products';
 import { toast } from '@/components/ui/use-toast';
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 
 const ProductDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [quantity, setQuantity] = useState(1);
+  const [isWishlisted, setIsWishlisted] = useState(false);
   
   // Find the product
   const product = products.find(p => p.id === parseInt(id || '0'));
+  
+  // Similar products (same category or color)
+  const similarProducts = products
+    .filter(p => p.id !== product?.id && (p.category === product?.category || p.color === product?.color))
+    .slice(0, 4);
   
   // If product doesn't exist, navigate to shop
   useEffect(() => {
@@ -48,6 +61,22 @@ const ProductDetail = () => {
     });
   };
   
+  const handleToggleWishlist = () => {
+    setIsWishlisted(!isWishlisted);
+    
+    if (!isWishlisted) {
+      toast({
+        title: "Added to Wishlist",
+        description: `${product.name} has been added to your wishlist.`
+      });
+    } else {
+      toast({
+        title: "Removed from Wishlist",
+        description: `${product.name} has been removed from your wishlist.`
+      });
+    }
+  };
+  
   return (
     <Layout>
       <div className="container mx-auto px-4 py-8">
@@ -63,8 +92,34 @@ const ProductDetail = () => {
             <img 
               src={product.image} 
               alt={product.name}
-              className="w-full h-auto rounded-md"
+              className="w-full h-auto rounded-md mb-4"
             />
+            
+            {/* Additional product images (if available) */}
+            {similarProducts.length > 0 && (
+              <div className="mt-4">
+                <h3 className="text-sm font-medium mb-2">You may also like:</h3>
+                <Carousel className="w-full">
+                  <CarouselContent>
+                    {similarProducts.map((similarProduct) => (
+                      <CarouselItem key={similarProduct.id} className="basis-1/3 sm:basis-1/4">
+                        <Link to={`/product/${similarProduct.id}`}>
+                          <div className="aspect-square overflow-hidden rounded-md">
+                            <img 
+                              src={similarProduct.image} 
+                              alt={similarProduct.name}
+                              className="w-full h-full object-cover hover:scale-105 transition-transform"
+                            />
+                          </div>
+                        </Link>
+                      </CarouselItem>
+                    ))}
+                  </CarouselContent>
+                  <CarouselPrevious />
+                  <CarouselNext />
+                </Carousel>
+              </div>
+            )}
           </div>
           
           {/* Product details */}
@@ -142,10 +197,15 @@ const ProductDetail = () => {
               </Button>
               <Button 
                 variant="outline" 
-                className="flex-1 border-brand-pink hover:bg-brand-pink/10 py-6"
+                className={`flex-1 py-6 ${
+                  isWishlisted 
+                    ? 'bg-brand-pink/10 border-brand-pink text-brand-pink'
+                    : 'border-brand-pink hover:bg-brand-pink/10'
+                }`}
+                onClick={handleToggleWishlist}
               >
-                <Heart size={18} className="mr-2" />
-                Add to Wishlist
+                <Heart size={18} className="mr-2" fill={isWishlisted ? "currentColor" : "none"} />
+                {isWishlisted ? 'Wishlisted' : 'Add to Wishlist'}
               </Button>
             </div>
             
