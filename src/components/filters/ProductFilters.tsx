@@ -64,9 +64,9 @@ const ProductFilters = ({ setFilters }: ProductFiltersProps) => {
         <RadioGroup value={selectedCategory} onValueChange={setSelectedCategory}>
           <div className="space-y-2">
             {categories.map((category) => (
-              <div key={category} className="flex items-center space-x-2">
-                <RadioGroupItem value={category} id={`category-${category}`} />
-                <Label htmlFor={`category-${category}`} className="capitalize">
+              <div key={String(category)} className="flex items-center space-x-2">
+                <RadioGroupItem value={String(category)} id={`category-${String(category)}`} />
+                <Label htmlFor={`category-${String(category)}`} className="capitalize">
                   {category}
                 </Label>
               </div>
@@ -81,9 +81,9 @@ const ProductFilters = ({ setFilters }: ProductFiltersProps) => {
         <RadioGroup value={selectedType} onValueChange={setSelectedType}>
           <div className="space-y-2">
             {types.map((type) => (
-              <div key={type} className="flex items-center space-x-2">
-                <RadioGroupItem value={type} id={`type-${type}`} />
-                <Label htmlFor={`type-${type}`} className="capitalize">
+              <div key={String(type)} className="flex items-center space-x-2">
+                <RadioGroupItem value={String(type)} id={`type-${String(type)}`} />
+                <Label htmlFor={`type-${String(type)}`} className="capitalize">
                   {type}
                 </Label>
               </div>
@@ -98,9 +98,9 @@ const ProductFilters = ({ setFilters }: ProductFiltersProps) => {
         <RadioGroup value={selectedColor} onValueChange={setSelectedColor}>
           <div className="space-y-2">
             {colors.map((color) => (
-              <div key={color} className="flex items-center space-x-2">
-                <RadioGroupItem value={color} id={`color-${color}`} />
-                <Label htmlFor={`color-${color}`} className="capitalize">
+              <div key={String(color)} className="flex items-center space-x-2">
+                <RadioGroupItem value={String(color)} id={`color-${String(color)}`} />
+                <Label htmlFor={`color-${String(color)}`} className="capitalize">
                   {color}
                 </Label>
               </div>
@@ -115,9 +115,9 @@ const ProductFilters = ({ setFilters }: ProductFiltersProps) => {
         <RadioGroup value={selectedSize} onValueChange={setSelectedSize}>
           <div className="space-y-2">
             {sizes.map((size) => (
-              <div key={size} className="flex items-center space-x-2">
-                <RadioGroupItem value={size} id={`size-${size}`} />
-                <Label htmlFor={`size-${size}`} className="uppercase">
+              <div key={String(size)} className="flex items-center space-x-2">
+                <RadioGroupItem value={String(size)} id={`size-${String(size)}`} />
+                <Label htmlFor={`size-${String(size)}`} className="uppercase">
                   {size}
                 </Label>
               </div>
