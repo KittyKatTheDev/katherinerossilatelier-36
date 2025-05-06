@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { 
   Drawer, 
@@ -28,7 +27,7 @@ import {
   stylePreferenceOptions, 
   StylePreference
 } from '@/types/UserProfile';
-import { palette } from 'lucide-react';
+import { Palette } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
@@ -214,7 +213,7 @@ const BitmojiCreator = ({
                       }}
                     >
                       <div className="w-full h-full flex items-center justify-center">
-                        <palette size={48} className="text-gray-400" />
+                        <Palette size={48} className="text-gray-400" />
                       </div>
                     </div>
                     
