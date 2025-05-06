@@ -1,4 +1,3 @@
-
 import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -25,7 +24,11 @@ interface Message {
   text: string;
 }
 
-const StylistBot = () => {
+interface StylistBotProps {
+  displayOnHomepage?: boolean;
+}
+
+const StylistBot = ({ displayOnHomepage = false }: StylistBotProps) => {
   const [messages, setMessages] = useState<Message[]>([
     { 
       id: 1, 
@@ -47,7 +50,7 @@ const StylistBot = () => {
     }
     
     // If it's the first time opening and user doesn't have a profile, suggest creating one
-    if (isOpen && !hasProfile && messages.length === 1) {
+    if ((isOpen || displayOnHomepage) && !hasProfile && messages.length === 1) {
       setTimeout(() => {
         const profileSuggestionMessage: Message = {
           id: Date.now(),
@@ -57,7 +60,7 @@ const StylistBot = () => {
         setMessages(prev => [...prev, profileSuggestionMessage]);
       }, 1000);
     }
-  }, [messages, isOpen, hasProfile]);
+  }, [messages, isOpen, hasProfile, displayOnHomepage]);
 
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
@@ -195,6 +198,93 @@ const StylistBot = () => {
     setMessages(prev => [...prev, confirmationMessage]);
   };
 
+  // If displayed on homepage, render the chat interface directly
+  if (displayOnHomepage) {
+    return (
+      <>
+        <div className="flex flex-col h-[500px] rounded-lg border">
+          <div className="flex items-center gap-2 border-b p-4">
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-brand-pink text-black">
+              <Bot size={16} />
+            </div>
+            <h2 className="font-medium">Personal Stylist Assistant</h2>
+            {profile && (
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="ml-auto flex items-center gap-1 text-xs"
+                onClick={() => setShowBitmojiCreator(true)}
+              >
+                <SmileIcon size={14} />
+                Edit Style Avatar
+              </Button>
+            )}
+          </div>
+          
+          <div className="flex-1 overflow-hidden px-4">
+            <ScrollArea className="h-full pr-4 py-4">
+              <div className="space-y-4">
+                {messages.map(message => (
+                  <ChatMessage 
+                    key={message.id}
+                    message={message}
+                  />
+                ))}
+                
+                {!profile && messages.length > 1 && (
+                  <div className="flex justify-center my-4">
+                    <Button
+                      onClick={() => setShowBitmojiCreator(true)}
+                      className="bg-brand-pink hover:bg-brand-pink/90 text-black flex items-center gap-2"
+                    >
+                      <SmileIcon size={16} />
+                      Create Style Avatar
+                    </Button>
+                  </div>
+                )}
+                
+                {isTyping && (
+                  <div className="flex items-start gap-3">
+                    <div className="flex h-8 w-8 shrink-0 select-none items-center justify-center rounded-full bg-brand-pink text-black">
+                      <Bot size={16} />
+                    </div>
+                    <div className="typing-indicator">
+                      <span className="dot"></span>
+                      <span className="dot"></span>
+                      <span className="dot"></span>
+                    </div>
+                  </div>
+                )}
+                <div ref={messagesEndRef} />
+              </div>
+            </ScrollArea>
+          </div>
+          
+          <form onSubmit={handleSendMessage} className="flex items-center gap-2 border-t p-4">
+            <Input
+              placeholder="Ask me about style advice..."
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              className="flex-1"
+            />
+            <Button type="submit" size="icon">
+              <Send size={18} />
+            </Button>
+          </form>
+        </div>
+        
+        {/* Bitmoji Creator */}
+        <BitmojiCreator 
+          isOpen={showBitmojiCreator}
+          onOpenChange={setShowBitmojiCreator}
+          onProfileSave={handleProfileSave}
+          initialProfile={profile || undefined}
+        />
+      </>
+    );
+  }
+
+  // Original floating button version
   return (
     <>
       <Drawer open={isOpen} onOpenChange={setIsOpen}>

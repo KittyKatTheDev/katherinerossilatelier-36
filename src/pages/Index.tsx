@@ -14,11 +14,20 @@ const Index = () => {
           </p>
         </section>
         
+        {/* Stylist Bot Integration */}
+        <section className="my-16 max-w-4xl mx-auto">
+          <h2 className="font-serif text-3xl text-center mb-6">Your Personal Stylist</h2>
+          <p className="text-gray-600 text-center mb-8">
+            Get personalized fashion advice tailored to your unique style preferences 
+            and body type.
+          </p>
+          <div className="bg-white rounded-lg shadow-lg p-6 border border-gray-200">
+            <StylistBot displayOnHomepage={true} />
+          </div>
+        </section>
+        
         {/* Other homepage content */}
       </div>
-      
-      {/* Personal Stylist Bot */}
-      <StylistBot />
     </Layout>
   );
 };
