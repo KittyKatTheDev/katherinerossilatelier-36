@@ -1,3 +1,4 @@
+
 import { useEffect, useRef, useState } from 'react';
 import { FabricJSCanvas, useFabricJSEditor } from '@/components/stylist/fabricjs-react';
 import * as fabric from 'fabric';
@@ -53,7 +54,9 @@ const OutfitDrawer = ({ onGeneratedImage }: OutfitDrawerProps) => {
     try {
       editor.canvas.setHeight(400);
       editor.canvas.setWidth(400);
-      editor.canvas.setBackgroundColor('#f8f8f8', editor.canvas.renderAll.bind(editor.canvas));
+      // Fix: Change setBackgroundColor to directly setting backgroundColor
+      editor.canvas.backgroundColor = '#f8f8f8';
+      editor.canvas.renderAll();
       
       // Set initial brush settings
       editor.canvas.freeDrawingBrush.color = color;
@@ -146,7 +149,9 @@ const OutfitDrawer = ({ onGeneratedImage }: OutfitDrawerProps) => {
     if (!editor?.canvas) return;
     
     editor.canvas.clear();
-    editor.canvas.setBackgroundColor('#f8f8f8', editor.canvas.renderAll.bind(editor.canvas));
+    // Fix: Change setBackgroundColor to directly setting backgroundColor
+    editor.canvas.backgroundColor = '#f8f8f8';
+    editor.canvas.renderAll();
     toast({
       description: "Canvas cleared",
     });
