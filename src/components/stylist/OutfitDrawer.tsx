@@ -1,6 +1,5 @@
-
 import { useEffect, useRef, useState } from 'react';
-import { FabricJSCanvas, useFabricJSEditor } from 'fabricjs-react';
+import { FabricJSCanvas, useFabricJSEditor } from '@/components/stylist/fabricjs-react';
 import { Button } from '@/components/ui/button';
 import { 
   Dialog,
@@ -99,6 +98,7 @@ const OutfitDrawer = ({ onGeneratedImage }: OutfitDrawerProps) => {
     };
 
     if (shape === 'rect') {
+      // Use the fabric object from the editor directly
       const rect = new fabric.Rect(options);
       editor.canvas.add(rect);
       editor.canvas.setActiveObject(rect);

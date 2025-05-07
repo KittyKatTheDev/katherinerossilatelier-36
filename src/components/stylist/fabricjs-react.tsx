@@ -1,6 +1,7 @@
 
 import { useEffect, useRef, useState } from 'react';
-import { fabric } from 'fabric';
+import { Canvas as FabricCanvas, Circle, Rect, IEvent } from 'fabric';
+import fabric from 'fabric';
 
 export interface FabricJSEditor {
   canvas: fabric.Canvas;
@@ -21,6 +22,8 @@ export const FabricJSCanvas = ({ className, onReady }: FabricJSCanvasProps) => {
   const canvasElParent = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    if (!canvasEl.current) return;
+    
     const canvas = new fabric.Canvas(canvasEl.current);
     const setCurrentDimensions = () => {
       if (canvasElParent.current) {
