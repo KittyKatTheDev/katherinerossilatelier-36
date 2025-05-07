@@ -1,17 +1,13 @@
-
 import Layout from '@/components/layout/Layout';
 import StylistBot from '@/components/stylist/StylistBot';
 import OutfitDrawer from '@/components/stylist/OutfitDrawer';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { products } from '@/data/products';
-
 const Index = () => {
   // Select a few featured products to show on homepage
   const featuredProducts = products.filter(product => product.isNewArrival).slice(0, 4);
-  
-  return (
-    <Layout>
+  return <Layout>
       <div className="container mx-auto px-4 py-8">
         {/* Stylist Bot Integration - Moved to the top */}
         <section className="my-8 max-w-4xl mx-auto">
@@ -47,23 +43,17 @@ const Index = () => {
           </p>
           
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            {featuredProducts.map((product) => (
-              <div key={product.id} className="group">
+            {featuredProducts.map(product => <div key={product.id} className="group">
                 <Link to={`/product/${product.id}`} className="block">
                   <div className="aspect-[3/4] overflow-hidden bg-gray-50 rounded-md mb-3">
-                    <img
-                      src={product.image}
-                      alt={product.name}
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                    />
+                    <img src={product.image} alt={product.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
                   </div>
                   <h3 className="font-serif text-lg mb-1 group-hover:text-brand-pink transition-colors">
                     {product.name}
                   </h3>
                   <p className="font-medium">${product.price}</p>
                 </Link>
-              </div>
-            ))}
+              </div>)}
           </div>
           
           <div className="text-center">
@@ -82,26 +72,18 @@ const Index = () => {
               Each item has been carefully selected for its quality and distinctive character.
             </p>
             <Button asChild variant="outline" className="border-brand-pink hover:bg-brand-pink hover:text-white">
-              <Link to="/shop?filter=vintage">Explore Vintage</Link>
+              <Link to="/shop?filter=vintage" className="py-[4px]">Explore Vintage</Link>
             </Button>
           </div>
           <div className="grid grid-cols-2 gap-4">
-            {products.filter(product => product.isVintage).slice(0, 4).map((product) => (
-              <Link key={product.id} to={`/product/${product.id}`} className="block">
+            {products.filter(product => product.isVintage).slice(0, 4).map(product => <Link key={product.id} to={`/product/${product.id}`} className="block">
                 <div className="aspect-square overflow-hidden rounded-md">
-                  <img 
-                    src={product.image} 
-                    alt={product.name} 
-                    className="w-full h-full object-cover hover:scale-105 transition-transform"
-                  />
+                  <img src={product.image} alt={product.name} className="w-full h-full object-cover hover:scale-105 transition-transform" />
                 </div>
-              </Link>
-            ))}
+              </Link>)}
           </div>
         </section>
       </div>
-    </Layout>
-  );
+    </Layout>;
 };
-
 export default Index;
