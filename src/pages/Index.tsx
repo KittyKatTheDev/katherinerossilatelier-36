@@ -1,6 +1,7 @@
 
 import Layout from '@/components/layout/Layout';
 import StylistBot from '@/components/stylist/StylistBot';
+import OutfitDrawer from '@/components/stylist/OutfitDrawer';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { products } from '@/data/products';
@@ -89,6 +90,11 @@ const Index = () => {
             Get personalized fashion advice tailored to your unique style preferences 
             and body type.
           </p>
+          
+          <div className="text-center mb-6">
+            <OutfitDrawer />
+          </div>
+          
           <div className="bg-white rounded-lg shadow-lg p-6 border border-gray-200">
             <StylistBot displayOnHomepage={true} />
           </div>

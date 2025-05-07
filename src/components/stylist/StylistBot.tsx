@@ -15,6 +15,7 @@ import { Bot, User, Send, SmileIcon } from 'lucide-react';
 import { stylistResponses } from './stylistResponses';
 import ChatMessage from './ChatMessage';
 import BitmojiCreator from './BitmojiCreator';
+import OutfitDrawer from './OutfitDrawer';
 import { useUserProfile } from '@/context/UserProfileContext';
 import { UserProfile } from '@/types/UserProfile';
 
@@ -22,6 +23,7 @@ interface Message {
   id: number;
   sender: 'user' | 'bot';
   text: string;
+  imageUrl?: string;
 }
 
 interface StylistBotProps {
@@ -61,6 +63,18 @@ const StylistBot = ({ displayOnHomepage = false }: StylistBotProps) => {
       }, 1000);
     }
   }, [messages, isOpen, hasProfile, displayOnHomepage]);
+
+  const handleGeneratedImage = (imageUrl: string) => {
+    // Add bot message about the generated image
+    const botMessage: Message = {
+      id: Date.now(),
+      sender: 'bot',
+      text: "I've received your drawing! This is how it would look as a real outfit. Would you like me to suggest similar items from our collection?",
+      imageUrl: imageUrl
+    };
+    
+    setMessages(prev => [...prev, botMessage]);
+  };
 
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
@@ -208,17 +222,19 @@ const StylistBot = ({ displayOnHomepage = false }: StylistBotProps) => {
               <Bot size={16} />
             </div>
             <h2 className="font-medium">Personal Stylist Assistant</h2>
-            {profile && (
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                className="ml-auto flex items-center gap-1 text-xs"
-                onClick={() => setShowBitmojiCreator(true)}
-              >
-                <SmileIcon size={14} />
-                Edit Style Avatar
-              </Button>
-            )}
+            <div className="flex gap-2 ml-auto">
+              {profile && (
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="flex items-center gap-1 text-xs"
+                  onClick={() => setShowBitmojiCreator(true)}
+                >
+                  <SmileIcon size={14} />
+                  Edit Style Avatar
+                </Button>
+              )}
+            </div>
           </div>
           
           <div className="flex-1 overflow-hidden px-4">
