@@ -1,5 +1,7 @@
+
 import { useEffect, useRef, useState } from 'react';
 import { FabricJSCanvas, useFabricJSEditor } from '@/components/stylist/fabricjs-react';
+import * as fabric from 'fabric';
 import { Button } from '@/components/ui/button';
 import { 
   Dialog,
@@ -50,7 +52,8 @@ const OutfitDrawer = ({ onGeneratedImage }: OutfitDrawerProps) => {
 
     editor.canvas.setHeight(400);
     editor.canvas.setWidth(400);
-    editor.canvas.setBackgroundColor('#f8f8f8', editor.canvas.renderAll.bind(editor.canvas));
+    editor.canvas.backgroundColor = '#f8f8f8';
+    editor.canvas.renderAll();
     
     // Set initial brush settings
     editor.canvas.freeDrawingBrush.color = color;
@@ -98,7 +101,6 @@ const OutfitDrawer = ({ onGeneratedImage }: OutfitDrawerProps) => {
     };
 
     if (shape === 'rect') {
-      // Use the fabric object from the editor directly
       const rect = new fabric.Rect(options);
       editor.canvas.add(rect);
       editor.canvas.setActiveObject(rect);
@@ -129,7 +131,8 @@ const OutfitDrawer = ({ onGeneratedImage }: OutfitDrawerProps) => {
     if (!editor?.canvas) return;
     
     editor.canvas.clear();
-    editor.canvas.setBackgroundColor('#f8f8f8', editor.canvas.renderAll.bind(editor.canvas));
+    editor.canvas.backgroundColor = '#f8f8f8';
+    editor.canvas.renderAll();
     toast({
       description: "Canvas cleared",
     });
@@ -140,7 +143,8 @@ const OutfitDrawer = ({ onGeneratedImage }: OutfitDrawerProps) => {
     
     const dataURL = editor.canvas.toDataURL({
       format: 'png',
-      quality: 1
+      quality: 1,
+      multiplier: 1
     });
     
     const link = document.createElement('a');
@@ -164,7 +168,8 @@ const OutfitDrawer = ({ onGeneratedImage }: OutfitDrawerProps) => {
       // Get the canvas data URL
       const dataURL = editor.canvas.toDataURL({
         format: 'png',
-        quality: 1
+        quality: 1,
+        multiplier: 1
       });
       
       // In a real implementation, this would make an API call to an AI service

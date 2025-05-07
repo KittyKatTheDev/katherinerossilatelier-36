@@ -1,7 +1,7 @@
 
 import { useEffect, useRef, useState } from 'react';
-import { Canvas as FabricCanvas, Circle, Rect, IEvent } from 'fabric';
-import fabric from 'fabric';
+import { Canvas, Circle, Rect } from 'fabric';
+import * as fabric from 'fabric';
 
 export interface FabricJSEditor {
   canvas: fabric.Canvas;
