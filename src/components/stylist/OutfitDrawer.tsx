@@ -1,4 +1,3 @@
-
 import { useEffect, useRef, useState } from 'react';
 import { FabricJSCanvas, useFabricJSEditor } from '@/components/stylist/fabricjs-react';
 import * as fabric from 'fabric';
@@ -48,46 +47,58 @@ const OutfitDrawer = ({ onGeneratedImage }: OutfitDrawerProps) => {
 
   // Set up canvas and tools when editor is ready
   useEffect(() => {
-    if (!editor) return;
-
-    editor.canvas.setHeight(400);
-    editor.canvas.setWidth(400);
-    editor.canvas.backgroundColor = '#f8f8f8';
-    editor.canvas.renderAll();
+    // Make sure editor and editor.canvas exist before trying to use them
+    if (!editor?.canvas) return;
     
-    // Set initial brush settings
-    editor.canvas.freeDrawingBrush.color = color;
-    editor.canvas.freeDrawingBrush.width = brushSize;
-    editor.canvas.isDrawingMode = true;
-    
+    try {
+      editor.canvas.setHeight(400);
+      editor.canvas.setWidth(400);
+      editor.canvas.setBackgroundColor('#f8f8f8', editor.canvas.renderAll.bind(editor.canvas));
+      
+      // Set initial brush settings
+      editor.canvas.freeDrawingBrush.color = color;
+      editor.canvas.freeDrawingBrush.width = brushSize;
+      editor.canvas.isDrawingMode = true;
+    } catch (error) {
+      console.error("Error initializing canvas:", error);
+    }
   }, [editor]);
 
   // Update brush settings when changed
   useEffect(() => {
-    if (!editor) return;
-    editor.canvas.freeDrawingBrush.color = color;
-    editor.canvas.freeDrawingBrush.width = brushSize;
+    if (!editor?.canvas?.freeDrawingBrush) return;
+    
+    try {
+      editor.canvas.freeDrawingBrush.color = color;
+      editor.canvas.freeDrawingBrush.width = brushSize;
+    } catch (error) {
+      console.error("Error updating brush settings:", error);
+    }
   }, [color, brushSize, editor]);
 
   // Toggle drawing mode based on active tab
   useEffect(() => {
-    if (!editor) return;
+    if (!editor?.canvas) return;
     
-    if (activeTab === 'draw') {
-      editor.canvas.isDrawingMode = true;
-      editor.canvas.freeDrawingBrush.color = color;
-      editor.canvas.freeDrawingBrush.width = brushSize;
-    } else if (activeTab === 'erase') {
-      editor.canvas.isDrawingMode = true;
-      editor.canvas.freeDrawingBrush.color = '#f8f8f8'; // Same as background
-      editor.canvas.freeDrawingBrush.width = brushSize * 2;
-    } else {
-      editor.canvas.isDrawingMode = false;
+    try {
+      if (activeTab === 'draw') {
+        editor.canvas.isDrawingMode = true;
+        editor.canvas.freeDrawingBrush.color = color;
+        editor.canvas.freeDrawingBrush.width = brushSize;
+      } else if (activeTab === 'erase') {
+        editor.canvas.isDrawingMode = true;
+        editor.canvas.freeDrawingBrush.color = '#f8f8f8'; // Same as background
+        editor.canvas.freeDrawingBrush.width = brushSize * 2;
+      } else {
+        editor.canvas.isDrawingMode = false;
+      }
+    } catch (error) {
+      console.error("Error updating drawing mode:", error);
     }
   }, [activeTab, editor, color, brushSize]);
 
   const addShape = (shape: 'rect' | 'circle') => {
-    if (!editor) return;
+    if (!editor?.canvas) return;
     
     const options = {
       left: 100,
@@ -100,17 +111,21 @@ const OutfitDrawer = ({ onGeneratedImage }: OutfitDrawerProps) => {
       radius: 50,
     };
 
-    if (shape === 'rect') {
-      const rect = new fabric.Rect(options);
-      editor.canvas.add(rect);
-      editor.canvas.setActiveObject(rect);
-    } else {
-      const circle = new fabric.Circle(options);
-      editor.canvas.add(circle);
-      editor.canvas.setActiveObject(circle);
+    try {
+      if (shape === 'rect') {
+        const rect = new fabric.Rect(options);
+        editor.canvas.add(rect);
+        editor.canvas.setActiveObject(rect);
+      } else {
+        const circle = new fabric.Circle(options);
+        editor.canvas.add(circle);
+        editor.canvas.setActiveObject(circle);
+      }
+      
+      editor.canvas.renderAll();
+    } catch (error) {
+      console.error("Error adding shape:", error);
     }
-    
-    editor.canvas.renderAll();
   };
 
   const undoAction = () => {
@@ -131,8 +146,7 @@ const OutfitDrawer = ({ onGeneratedImage }: OutfitDrawerProps) => {
     if (!editor?.canvas) return;
     
     editor.canvas.clear();
-    editor.canvas.backgroundColor = '#f8f8f8';
-    editor.canvas.renderAll();
+    editor.canvas.setBackgroundColor('#f8f8f8', editor.canvas.renderAll.bind(editor.canvas));
     toast({
       description: "Canvas cleared",
     });

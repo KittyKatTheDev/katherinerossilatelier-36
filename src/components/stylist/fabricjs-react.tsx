@@ -1,10 +1,9 @@
 
 import { useEffect, useRef, useState } from 'react';
-import { Canvas, Circle, Rect } from 'fabric';
 import * as fabric from 'fabric';
 
 export interface FabricJSEditor {
-  canvas: fabric.Canvas;
+  canvas: fabric.Canvas | null;
   addCircle: () => void;
   addRectangle: () => void;
   updateColor: (color: string) => void;
@@ -24,34 +23,48 @@ export const FabricJSCanvas = ({ className, onReady }: FabricJSCanvasProps) => {
   useEffect(() => {
     if (!canvasEl.current) return;
     
-    const canvas = new fabric.Canvas(canvasEl.current);
-    const setCurrentDimensions = () => {
-      if (canvasElParent.current) {
-        const width = canvasElParent.current.clientWidth;
-        canvas.setWidth(width);
-        canvas.setHeight(width);
-        canvas.renderAll();
-      }
-    };
+    // Create canvas with error handling
+    let canvas: fabric.Canvas;
+    try {
+      canvas = new fabric.Canvas(canvasEl.current);
+      
+      const setCurrentDimensions = () => {
+        if (canvasElParent.current && canvas) {
+          const width = canvasElParent.current.clientWidth;
+          canvas.setWidth(width);
+          canvas.setHeight(width);
+          canvas.renderAll();
+        }
+      };
 
-    const resizeObserver = new ResizeObserver(() => {
+      const resizeObserver = new ResizeObserver(() => {
+        setCurrentDimensions();
+      });
+
+      if (canvasElParent.current) {
+        resizeObserver.observe(canvasElParent.current);
+      }
+      
+      // Initial sizing
       setCurrentDimensions();
-    });
-
-    if (canvasElParent.current) {
-      resizeObserver.observe(canvasElParent.current);
-    }
-    
-    if (onReady) {
-      onReady(canvas);
-    }
-
-    return () => {
-      canvas.dispose();
-      if (canvasElParent.current) {
-        resizeObserver.unobserve(canvasElParent.current);
+      
+      // Only call onReady when canvas is fully initialized
+      if (onReady) {
+        onReady(canvas);
       }
-    };
+      
+      return () => {
+        if (canvas) {
+          canvas.dispose();
+        }
+        if (canvasElParent.current) {
+          resizeObserver.unobserve(canvasElParent.current);
+        }
+      };
+    } catch (error) {
+      console.error("Error initializing fabric canvas:", error);
+      return;
+    }
   }, []);
 
   return (
@@ -63,21 +76,36 @@ export const FabricJSCanvas = ({ className, onReady }: FabricJSCanvasProps) => {
 
 export const useFabricJSEditor = () => {
   const [canvas, setCanvas] = useState<fabric.Canvas | null>(null);
-  const editor = useRef<FabricJSEditor>({} as FabricJSEditor);
+  const editor = useRef<FabricJSEditor>({
+    canvas: null,
+    addCircle: () => {},
+    addRectangle: () => {},
+    updateColor: () => {},
+    deleteAll: () => {},
+    deleteSelected: () => {}
+  });
 
-  const onReady = (canvas: fabric.Canvas) => {
-    setCanvas(canvas);
-    editor.current.canvas = canvas;
+  const onReady = (fabricCanvas: fabric.Canvas) => {
+    // Ensure canvas is properly initialized
+    if (!fabricCanvas) return;
+    
+    setCanvas(fabricCanvas);
+    editor.current.canvas = fabricCanvas;
+    
+    // Initialize editor methods with the canvas
     editor.current.addCircle = () => {
+      if (!fabricCanvas) return;
       const circle = new fabric.Circle({
         radius: 50,
         fill: 'transparent',
         stroke: '#000000',
         strokeWidth: 1,
       });
-      canvas.add(circle);
+      fabricCanvas.add(circle);
     };
+    
     editor.current.addRectangle = () => {
+      if (!fabricCanvas) return;
       const rect = new fabric.Rect({
         width: 100,
         height: 100,
@@ -85,28 +113,34 @@ export const useFabricJSEditor = () => {
         stroke: '#000000',
         strokeWidth: 1,
       });
-      canvas.add(rect);
+      fabricCanvas.add(rect);
     };
+    
     editor.current.updateColor = (color: string) => {
-      const activeObjects = canvas.getActiveObjects();
+      if (!fabricCanvas) return;
+      const activeObjects = fabricCanvas.getActiveObjects();
       if (activeObjects.length > 0) {
         activeObjects.forEach((obj) => {
           obj.set('stroke', color);
         });
-        canvas.renderAll();
+        fabricCanvas.renderAll();
       }
     };
+    
     editor.current.deleteAll = () => {
-      canvas.clear();
+      if (!fabricCanvas) return;
+      fabricCanvas.clear();
     };
+    
     editor.current.deleteSelected = () => {
-      const activeObjects = canvas.getActiveObjects();
+      if (!fabricCanvas) return;
+      const activeObjects = fabricCanvas.getActiveObjects();
       if (activeObjects.length > 0) {
         activeObjects.forEach((obj) => {
-          canvas.remove(obj);
+          fabricCanvas.remove(obj);
         });
-        canvas.discardActiveObject();
-        canvas.renderAll();
+        fabricCanvas.discardActiveObject();
+        fabricCanvas.renderAll();
       }
     };
   };
