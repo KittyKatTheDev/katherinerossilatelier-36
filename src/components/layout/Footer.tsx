@@ -1,11 +1,7 @@
-
 import { Link } from 'react-router-dom';
-
 const Footer = () => {
   const currentYear = new Date().getFullYear();
-
-  return (
-    <footer className="bg-white border-t border-gray-100 pt-12 pb-8">
+  return <footer className="bg-white border-t border-gray-100 pt-12 pb-8">
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
           {/* Brand Column */}
@@ -74,10 +70,12 @@ const Footer = () => {
           <div>
             <h4 className="font-serif text-lg mb-3">Contact Us</h4>
             <ul className="space-y-2 text-sm">
-              <li>Email: hello@katherinerossil.com</li>
-              <li>Phone: +1 (555) 123-4567</li>
-              <li>123 Fashion Avenue</li>
-              <li>New York, NY 10001</li>
+              <li>Email: rossilkatherine.com</li>
+              <li>
+            </li>
+              <li>Ventura, California</li>
+              <li>
+            </li>
             </ul>
           </div>
         </div>
@@ -86,8 +84,6 @@ const Footer = () => {
           <p>&copy; {currentYear} Katherine Rossil Atelier & Vintage. All rights reserved.</p>
         </div>
       </div>
-    </footer>
-  );
+    </footer>;
 };
-
 export default Footer;
