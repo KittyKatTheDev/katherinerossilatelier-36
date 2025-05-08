@@ -1,12 +1,15 @@
+
 import Layout from '@/components/layout/Layout';
 import StylistBot from '@/components/stylist/StylistBot';
 import OutfitDrawer from '@/components/stylist/OutfitDrawer';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { products } from '@/data/products';
+
 const Index = () => {
   // Select a few featured products to show on homepage
   const featuredProducts = products.filter(product => product.isNewArrival).slice(0, 4);
+  
   return <Layout>
       <div className="container mx-auto px-4 py-8">
         {/* Stylist Bot Integration - Moved to the top */}
@@ -86,4 +89,5 @@ const Index = () => {
       </div>
     </Layout>;
 };
+
 export default Index;
