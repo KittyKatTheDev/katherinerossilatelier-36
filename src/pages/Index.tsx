@@ -12,8 +12,29 @@ const Index = () => {
   
   return <Layout>
       <div className="container mx-auto px-4 py-8">
-        {/* Stylist Bot Integration - Moved to the top */}
-        <section className="my-8 max-w-4xl mx-auto">
+        {/* Vintage Collection Banner - Moved to the top */}
+        <section className="my-8 grid grid-cols-1 md:grid-cols-2 gap-8 items-center bg-gray-50 p-8 rounded-lg">
+          <div>
+            <h2 className="font-serif text-3xl mb-4">Vintage Treasures</h2>
+            <p className="text-gray-600 mb-6">
+              Discover our curated selection of unique vintage pieces that bring timeless elegance to your wardrobe.
+              Each item has been carefully selected for its quality and distinctive character.
+            </p>
+            <Button asChild variant="outline" className="border-brand-pink hover:bg-brand-pink hover:text-white">
+              <Link to="/shop?filter=vintage" className="py-[4px]">Explore Vintage</Link>
+            </Button>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            {products.filter(product => product.isVintage).slice(0, 4).map(product => <Link key={product.id} to={`/product/${product.id}`} className="block">
+                <div className="aspect-square overflow-hidden rounded-md">
+                  <img src={product.image} alt={product.name} className="w-full h-full object-cover hover:scale-105 transition-transform" />
+                </div>
+              </Link>)}
+          </div>
+        </section>
+        
+        {/* Stylist Bot Integration */}
+        <section className="my-16 max-w-4xl mx-auto">
           <h2 className="font-serif text-3xl text-center mb-4">Your Personal Stylist</h2>
           <p className="text-gray-600 text-center mb-6">
             Get personalized fashion advice tailored to your unique style preferences 
@@ -63,27 +84,6 @@ const Index = () => {
             <Button asChild className="bg-brand-pink hover:bg-brand-pink/90">
               <Link to="/shop">Shop All Collections</Link>
             </Button>
-          </div>
-        </section>
-        
-        {/* Vintage Collection Banner */}
-        <section className="my-16 grid grid-cols-1 md:grid-cols-2 gap-8 items-center bg-gray-50 p-8 rounded-lg">
-          <div>
-            <h2 className="font-serif text-3xl mb-4">Vintage Treasures</h2>
-            <p className="text-gray-600 mb-6">
-              Discover our curated selection of unique vintage pieces that bring timeless elegance to your wardrobe.
-              Each item has been carefully selected for its quality and distinctive character.
-            </p>
-            <Button asChild variant="outline" className="border-brand-pink hover:bg-brand-pink hover:text-white">
-              <Link to="/shop?filter=vintage" className="py-[4px]">Explore Vintage</Link>
-            </Button>
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            {products.filter(product => product.isVintage).slice(0, 4).map(product => <Link key={product.id} to={`/product/${product.id}`} className="block">
-                <div className="aspect-square overflow-hidden rounded-md">
-                  <img src={product.image} alt={product.name} className="w-full h-full object-cover hover:scale-105 transition-transform" />
-                </div>
-              </Link>)}
           </div>
         </section>
       </div>
