@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { useUserProfile } from '@/context/UserProfileContext';
-import { Princess, Shirt, Star, Diamond, Brush } from 'lucide-react';
+import { Crown, Shirt, Star, Diamond, Brush } from 'lucide-react';
 import { 
   Dialog, 
   DialogContent,
@@ -22,7 +22,7 @@ import OutfitDrawer from './OutfitDrawer';
 const getAvatarIcon = (avatarType?: AvatarType) => {
   switch (avatarType) {
     case 'princess':
-      return <Princess className="h-12 w-12" />;
+      return <Crown className="h-12 w-12" />;
     case 'casual':
       return <Shirt className="h-12 w-12" />;
     case 'formal':
@@ -30,7 +30,7 @@ const getAvatarIcon = (avatarType?: AvatarType) => {
     case 'sporty':
       return <Star className="h-12 w-12" />;
     default:
-      return <Princess className="h-12 w-12" />;
+      return <Crown className="h-12 w-12" />;
   }
 };
 
@@ -121,7 +121,7 @@ const StyleAvatar = () => {
                   }`}
                   onClick={() => handleAvatarChange(option.value)}
                 >
-                  {option.value === 'princess' && <Princess className="h-8 w-8" />}
+                  {option.value === 'princess' && <Crown className="h-8 w-8" />}
                   {option.value === 'casual' && <Shirt className="h-8 w-8" />}
                   {option.value === 'formal' && <Diamond className="h-8 w-8" />}
                   {option.value === 'sporty' && <Star className="h-8 w-8" />}
