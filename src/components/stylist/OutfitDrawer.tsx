@@ -1,4 +1,3 @@
-
 import { useEffect, useRef, useState } from 'react';
 import { FabricJSCanvas, useFabricJSEditor } from '@/components/stylist/fabricjs-react';
 import * as fabric from 'fabric';
@@ -31,9 +30,11 @@ import { Textarea } from '@/components/ui/textarea';
 
 interface OutfitDrawerProps {
   onGeneratedImage?: (imageUrl: string) => void;
+  isOpen?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
-const OutfitDrawer = ({ onGeneratedImage }: OutfitDrawerProps) => {
+const OutfitDrawer = ({ onGeneratedImage, isOpen = false, onOpenChange }: OutfitDrawerProps) => {
   const { editor, onReady } = useFabricJSEditor();
   const [color, setColor] = useState('#000000');
   const [brushSize, setBrushSize] = useState(5);
@@ -42,9 +43,23 @@ const OutfitDrawer = ({ onGeneratedImage }: OutfitDrawerProps) => {
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [prompt, setPrompt] = useState('');
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(isOpen);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const { toast } = useToast();
+
+  // Sync open state with props
+  useEffect(() => {
+    if (isOpen !== undefined) {
+      setOpen(isOpen);
+    }
+  }, [isOpen]);
+
+  // Notify parent component when open state changes
+  useEffect(() => {
+    if (onOpenChange) {
+      onOpenChange(open);
+    }
+  }, [open, onOpenChange]);
 
   // Set up canvas and tools when editor is ready
   useEffect(() => {

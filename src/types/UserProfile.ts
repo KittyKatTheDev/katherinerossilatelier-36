@@ -1,4 +1,3 @@
-
 export interface UserProfile {
   id?: string;
   name?: string;
@@ -10,8 +9,11 @@ export interface UserProfile {
     hairStyle?: string;
     facialFeatures?: string;
     outfit?: string;
+    avatarType?: AvatarType;
   };
 }
+
+export type AvatarType = 'princess' | 'casual' | 'formal' | 'sporty';
 
 export type SkinTone = 
   | 'porcelain' 
@@ -144,4 +146,11 @@ export const stylePreferenceOptions: Array<{value: StylePreference, label: strin
   { value: 'business-casual', label: 'Business Casual' },
   { value: 'eclectic', label: 'Eclectic' },
   { value: 'avant-garde', label: 'Avant-garde' }
+];
+
+export const avatarTypeOptions: Array<{value: AvatarType, label: string, icon: string}> = [
+  { value: 'princess', label: 'Princess', icon: 'crown' },
+  { value: 'casual', label: 'Casual', icon: 'shirt' },
+  { value: 'formal', label: 'Formal', icon: 'diamond' },
+  { value: 'sporty', label: 'Sporty', icon: 'star' }
 ];

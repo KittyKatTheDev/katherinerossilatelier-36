@@ -1,7 +1,7 @@
 
 import Layout from '@/components/layout/Layout';
 import StylistBot from '@/components/stylist/StylistBot';
-import OutfitDrawer from '@/components/stylist/OutfitDrawer';
+import StyleAvatar from '@/components/stylist/StyleAvatar';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { products } from '@/data/products';
@@ -33,7 +33,7 @@ const Index = () => {
           </div>
         </section>
         
-        {/* Stylist Bot Integration */}
+        {/* Style Avatar Section */}
         <section className="my-16 max-w-4xl mx-auto">
           <h2 className="font-serif text-3xl text-center mb-4">Your Personal Stylist</h2>
           <p className="text-gray-600 text-center mb-6">
@@ -41,8 +41,8 @@ const Index = () => {
             and body type.
           </p>
           
-          <div className="text-center mb-6">
-            <OutfitDrawer />
+          <div className="flex flex-col items-center mb-8">
+            <StyleAvatar />
           </div>
           
           <div className="bg-white rounded-lg shadow-lg p-6 border border-gray-200">
