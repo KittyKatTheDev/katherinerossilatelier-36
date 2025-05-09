@@ -26,9 +26,13 @@ import {
   skinToneOptions, 
   bodyTypeOptions,
   stylePreferenceOptions, 
-  StylePreference
+  StylePreference,
+  hairStyleOptions,
+  hairColorOptions,
+  facialFeatureOptions,
+  HairStyle,
+  FacialFeature
 } from '@/types/UserProfile';
-import { Palette } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
@@ -39,6 +43,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import CartoonAvatar from './CartoonAvatar';
 
 interface BitmojiCreatorProps {
   isOpen: boolean;
@@ -82,6 +87,12 @@ const BitmojiCreator = ({
   const selectedSkinTone = form.watch('skinTone');
   const selectedBodyType = form.watch('bodyType');
   const selectedStyles = form.watch('stylePreferences');
+  const selectedHairStyle = form.watch('avatarConfig.hairStyle') || 'short';
+  const selectedHairColor = form.watch('avatarConfig.hairColor') || '#8B4513';
+  const selectedFacialFeature = form.watch('avatarConfig.facialFeatures') || 'neutral';
+
+  // Get current form values for preview
+  const currentProfile = form.watch();
 
   return (
     <Drawer open={isOpen} onOpenChange={onOpenChange}>
@@ -97,8 +108,9 @@ const BitmojiCreator = ({
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 pb-10">
               <Tabs value={currentTab} onValueChange={setCurrentTab}>
-                <TabsList className="grid grid-cols-3 mb-4">
-                  <TabsTrigger value="basics">Basics</TabsTrigger>
+                <TabsList className="grid grid-cols-4 mb-4">
+                  <TabsTrigger value="basics">Body</TabsTrigger>
+                  <TabsTrigger value="hair">Hair</TabsTrigger>
                   <TabsTrigger value="style">Style</TabsTrigger>
                   <TabsTrigger value="preview">Preview</TabsTrigger>
                 </TabsList>
@@ -160,6 +172,76 @@ const BitmojiCreator = ({
                   />
                 </TabsContent>
                 
+                <TabsContent value="hair" className="space-y-6">
+                  {/* Hair Style Selection */}
+                  <FormField
+                    control={form.control}
+                    name="avatarConfig.hairStyle"
+                    render={({ field }) => (
+                      <FormItem className="space-y-3">
+                        <FormLabel className="text-lg">Hair Style</FormLabel>
+                        <FormControl>
+                          <Select 
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                          >
+                            <SelectTrigger className="w-full">
+                              <SelectValue placeholder="Select a hair style" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {hairStyleOptions.map((option) => (
+                                <SelectItem key={option.value} value={option.value}>
+                                  {option.label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                  
+                  {/* Hair Color Selection */}
+                  <div className="space-y-3">
+                    <h3 className="font-medium text-lg">Hair Color</h3>
+                    <div className="grid grid-cols-4 sm:grid-cols-6 gap-3">
+                      {hairColorOptions.map((option) => (
+                        <div key={option.value} className="flex flex-col items-center">
+                          <button
+                            type="button"
+                            className={`h-10 w-10 rounded-full border-2 ${
+                              selectedHairColor === option.value 
+                                ? 'border-black ring-2 ring-brand-pink ring-opacity-50' 
+                                : 'border-gray-200'
+                            }`}
+                            style={{ backgroundColor: option.color }}
+                            onClick={() => form.setValue('avatarConfig.hairColor', option.value)}
+                            aria-label={`Select ${option.label} hair color`}
+                          />
+                          <span className="text-xs mt-1">{option.label}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  {/* Facial Features Selection */}
+                  <div className="space-y-3">
+                    <h3 className="font-medium text-lg">Facial Features</h3>
+                    <RadioGroup 
+                      value={selectedFacialFeature}
+                      onValueChange={(value) => form.setValue('avatarConfig.facialFeatures', value as FacialFeature)}
+                      className="grid grid-cols-2 gap-2"
+                    >
+                      {facialFeatureOptions.map((option) => (
+                        <div key={option.value} className="flex items-center space-x-2">
+                          <RadioGroupItem value={option.value} id={`feature-${option.value}`} />
+                          <Label htmlFor={`feature-${option.value}`}>{option.label}</Label>
+                        </div>
+                      ))}
+                    </RadioGroup>
+                  </div>
+                </TabsContent>
+                
                 <TabsContent value="style" className="space-y-6">
                   {/* Style Preferences */}
                   <div className="space-y-4">
@@ -201,15 +283,8 @@ const BitmojiCreator = ({
                 <TabsContent value="preview" className="space-y-6">
                   <div className="flex flex-col items-center justify-center py-6">
                     {/* Bitmoji Preview */}
-                    <div 
-                      className="w-48 h-48 rounded-full border-4 border-brand-pink"
-                      style={{ 
-                        backgroundColor: skinToneOptions.find(o => o.value === selectedSkinTone)?.color 
-                      }}
-                    >
-                      <div className="w-full h-full flex items-center justify-center">
-                        <Palette size={48} className="text-gray-400" />
-                      </div>
+                    <div className="bg-gray-100 p-6 rounded-xl w-full flex justify-center">
+                      <CartoonAvatar profile={currentProfile} size="lg" />
                     </div>
                     
                     <div className="mt-4 text-center">
