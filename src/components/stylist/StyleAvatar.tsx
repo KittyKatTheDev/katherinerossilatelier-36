@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { useUserProfile } from '@/context/UserProfileContext';
-import { Crown, Shirt, Star, Diamond, Brush, Palette } from 'lucide-react';
+import { Crown, Shirt, Star, Diamond, Brush, Palette, Smile } from 'lucide-react';
 import { 
   Dialog, 
   DialogContent,
@@ -21,15 +21,22 @@ import {
   hairStyleOptions, 
   hairColorOptions, 
   facialFeatureOptions,
+  eyeColorOptions,
+  facialExpressionOptions,
+  accessoryOptions,
   outfitOptions,
   HairStyle,
-  FacialFeature
+  FacialFeature,
+  EyeColor,
+  FacialExpression,
+  Accessory
 } from '@/types/UserProfile';
 import { useToast } from '@/hooks/use-toast';
 import OutfitDrawer from './OutfitDrawer';
 import CartoonAvatar from './CartoonAvatar';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   Tabs,
   TabsContent,
@@ -47,7 +54,8 @@ import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from "@/components/ui/collapsible"
+} from "@/components/ui/collapsible";
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 const getAvatarIcon = (avatarType?: AvatarType) => {
   switch (avatarType) {
@@ -59,6 +67,8 @@ const getAvatarIcon = (avatarType?: AvatarType) => {
       return <Diamond className="h-12 w-12" />;
     case 'sporty':
       return <Star className="h-12 w-12" />;
+    case 'bitmoji':
+      return <Smile className="h-12 w-12" />;
     default:
       return <Crown className="h-12 w-12" />;
   }
@@ -70,7 +80,9 @@ const getRandomMotivation = () => {
     "Ready to create your look?",
     "Let's design something special!",
     "Time for a style refresh?",
-    "What's your vibe today?"
+    "What's your vibe today?",
+    "Express yourself with your Bitmoji!",
+    "Show off your unique style!"
   ];
   
   return motivations[Math.floor(Math.random() * motivations.length)];
@@ -85,12 +97,15 @@ const StyleAvatar = () => {
   const [isCollapsibleOpen, setIsCollapsibleOpen] = useState(false);
   const { toast } = useToast();
   
-  const selectedAvatarType = profile?.avatarConfig?.avatarType || 'princess';
+  const selectedAvatarType = profile?.avatarConfig?.avatarType || 'bitmoji';
   const selectedHairStyle = profile?.avatarConfig?.hairStyle || 'short';
   const selectedHairColor = profile?.avatarConfig?.hairColor || '#8B4513';
-  const selectedFacialFeature = profile?.avatarConfig?.facialFeatures || 'neutral';
+  const selectedFacialFeatures = profile?.avatarConfig?.facialFeatures || [];
+  const selectedEyeColor = profile?.avatarConfig?.eyeColor || 'brown';
+  const selectedExpression = profile?.avatarConfig?.expression || 'smile';
+  const selectedAccessories = profile?.avatarConfig?.accessories || [];
   const skinToneColor = profile?.skinTone 
-    ? (document.querySelector(`[style*="${profile.skinTone}"]`) as HTMLElement)?.style.backgroundColor
+    ? document.querySelector(`[data-skin-tone="${profile.skinTone}"]`)?.getAttribute('style')?.match(/background-color: ([^;]+)/)?.[1]
     : '#E8B88A'; // Default medium skin tone
   
   const handleAvatarChange = (avatarType: AvatarType) => {
@@ -141,18 +156,84 @@ const StyleAvatar = () => {
     }
   };
 
-  const handleFacialFeatureChange = (facialFeatures: FacialFeature) => {
+  const handleFacialFeatureChange = (feature: FacialFeature, checked: boolean) => {
     if (profile) {
+      const currentFeatures = profile.avatarConfig?.facialFeatures || [];
+      let updatedFeatures: FacialFeature[];
+      
+      if (checked) {
+        updatedFeatures = [...currentFeatures, feature];
+      } else {
+        updatedFeatures = currentFeatures.filter(f => f !== feature);
+      }
+      
       const updatedProfile = {
         ...profile,
         avatarConfig: {
           ...profile.avatarConfig,
-          facialFeatures
+          facialFeatures: updatedFeatures
         }
       };
       updateProfile(updatedProfile);
       toast({
         description: `Facial features updated!`,
+      });
+    }
+  };
+  
+  const handleEyeColorChange = (eyeColor: EyeColor) => {
+    if (profile) {
+      const updatedProfile = {
+        ...profile,
+        avatarConfig: {
+          ...profile.avatarConfig,
+          eyeColor
+        }
+      };
+      updateProfile(updatedProfile);
+      toast({
+        description: `Eye color updated!`,
+      });
+    }
+  };
+  
+  const handleExpressionChange = (expression: FacialExpression) => {
+    if (profile) {
+      const updatedProfile = {
+        ...profile,
+        avatarConfig: {
+          ...profile.avatarConfig,
+          expression
+        }
+      };
+      updateProfile(updatedProfile);
+      toast({
+        description: `Expression updated!`,
+      });
+    }
+  };
+  
+  const handleAccessoryChange = (accessory: Accessory, checked: boolean) => {
+    if (profile) {
+      const currentAccessories = profile.avatarConfig?.accessories || [];
+      let updatedAccessories: Accessory[];
+      
+      if (checked) {
+        updatedAccessories = [...currentAccessories, accessory];
+      } else {
+        updatedAccessories = currentAccessories.filter(a => a !== accessory);
+      }
+      
+      const updatedProfile = {
+        ...profile,
+        avatarConfig: {
+          ...profile.avatarConfig,
+          accessories: updatedAccessories
+        }
+      };
+      updateProfile(updatedProfile);
+      toast({
+        description: `Accessories updated!`,
       });
     }
   };
@@ -186,7 +267,7 @@ const StyleAvatar = () => {
   return (
     <div className="flex flex-col items-center">
       <div className="text-center mb-4">
-        <h3 className="text-xl font-serif mb-2">Your Style Avatar</h3>
+        <h3 className="text-xl font-serif mb-2">Your Bitmoji Avatar</h3>
         <p className="text-gray-600">{motivation}</p>
       </div>
       
@@ -197,14 +278,14 @@ const StyleAvatar = () => {
               style={{ backgroundColor: skinToneColor || '#E8B88A' }}>
               {profile && <CartoonAvatar profile={profile} size="sm" />}
               <div className="absolute inset-0 bg-black bg-opacity-0 flex items-center justify-center opacity-0 group-hover:opacity-100 group-hover:bg-opacity-20 transition-all">
-                <span className="text-white text-xs font-medium">Customize Avatar</span>
+                <span className="text-white text-xs font-medium">Customize Bitmoji</span>
               </div>
             </Button>
           </DialogTrigger>
           
           <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>Customize Your Avatar</DialogTitle>
+              <DialogTitle>Customize Your Bitmoji</DialogTitle>
             </DialogHeader>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -223,15 +304,16 @@ const StyleAvatar = () => {
               
               <div className="md:col-span-2">
                 <Tabs defaultValue="style" value={activeTab} onValueChange={setActiveTab}>
-                  <TabsList className="grid grid-cols-3 mb-4">
+                  <TabsList className="grid grid-cols-4 mb-4">
                     <TabsTrigger value="style">Style</TabsTrigger>
                     <TabsTrigger value="hair">Hair</TabsTrigger>
-                    <TabsTrigger value="features">Features</TabsTrigger>
+                    <TabsTrigger value="features">Face</TabsTrigger>
+                    <TabsTrigger value="accessories">Accessories</TabsTrigger>
                   </TabsList>
                   
                   <TabsContent value="style" className="space-y-4">
                     <h3 className="font-medium text-lg">Avatar Style</h3>
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                       {avatarTypeOptions.map((option) => (
                         <Button
                           key={option.value}
@@ -245,6 +327,7 @@ const StyleAvatar = () => {
                           {option.value === 'casual' && <Shirt className="h-8 w-8" />}
                           {option.value === 'formal' && <Diamond className="h-8 w-8" />}
                           {option.value === 'sporty' && <Star className="h-8 w-8" />}
+                          {option.value === 'bitmoji' && <Smile className="h-8 w-8" />}
                           <span>{option.label}</span>
                         </Button>
                       ))}
@@ -327,20 +410,86 @@ const StyleAvatar = () => {
                     </div>
                   </TabsContent>
                   
-                  <TabsContent value="features" className="space-y-4">
-                    <h3 className="font-medium text-lg mb-2">Facial Features</h3>
-                    <RadioGroup 
-                      value={selectedFacialFeature} 
-                      onValueChange={(value) => handleFacialFeatureChange(value as FacialFeature)}
-                      className="grid grid-cols-2 gap-2"
-                    >
-                      {facialFeatureOptions.map((option) => (
-                        <div key={option.value} className="flex items-center space-x-2">
-                          <RadioGroupItem value={option.value} id={`feature-${option.value}`} />
-                          <Label htmlFor={`feature-${option.value}`}>{option.label}</Label>
+                  <TabsContent value="features" className="space-y-5">
+                    <div>
+                      <h3 className="font-medium text-lg mb-2">Eye Color</h3>
+                      <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
+                        {eyeColorOptions.map((option) => (
+                          <div key={option.value} className="flex flex-col items-center">
+                            <button
+                              type="button"
+                              className={`h-8 w-8 rounded-full border-2 ${
+                                selectedEyeColor === option.value 
+                                  ? 'border-black ring-2 ring-brand-pink ring-opacity-50' 
+                                  : 'border-gray-200'
+                              }`}
+                              style={{ backgroundColor: option.color }}
+                              onClick={() => handleEyeColorChange(option.value)}
+                              aria-label={`Select ${option.label} eye color`}
+                            />
+                            <span className="text-xs mt-1">{option.label}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  
+                    <div>
+                      <h3 className="font-medium text-lg mb-2">Expression</h3>
+                      <ScrollArea className="h-32">
+                        <div className="grid grid-cols-2 gap-2">
+                          {facialExpressionOptions.map((option) => (
+                            <div key={option.value} className="flex items-center space-x-2">
+                              <RadioGroup value={selectedExpression} onValueChange={(value) => handleExpressionChange(value as FacialExpression)}>
+                                <div className="flex items-center space-x-2">
+                                  <RadioGroupItem value={option.value} id={`expression-${option.value}`} />
+                                  <Label htmlFor={`expression-${option.value}`}>{option.label}</Label>
+                                </div>
+                              </RadioGroup>
+                            </div>
+                          ))}
                         </div>
-                      ))}
-                    </RadioGroup>
+                      </ScrollArea>
+                    </div>
+                  
+                    <div>
+                      <h3 className="font-medium text-lg mb-2">Facial Features</h3>
+                      <ScrollArea className="h-40">
+                        <div className="grid grid-cols-2 gap-2">
+                          {facialFeatureOptions.map((option) => (
+                            <div key={option.value} className="flex items-center space-x-2">
+                              <Checkbox 
+                                id={`feature-${option.value}`} 
+                                checked={selectedFacialFeatures.includes(option.value)}
+                                onCheckedChange={(checked) => 
+                                  handleFacialFeatureChange(option.value, checked === true)
+                                }
+                              />
+                              <Label htmlFor={`feature-${option.value}`}>{option.label}</Label>
+                            </div>
+                          ))}
+                        </div>
+                      </ScrollArea>
+                    </div>
+                  </TabsContent>
+                  
+                  <TabsContent value="accessories" className="space-y-4">
+                    <h3 className="font-medium text-lg mb-2">Accessories</h3>
+                    <ScrollArea className="h-64">
+                      <div className="grid grid-cols-2 gap-2">
+                        {accessoryOptions.map((option) => (
+                          <div key={option.value} className="flex items-center space-x-2">
+                            <Checkbox 
+                              id={`accessory-${option.value}`} 
+                              checked={selectedAccessories.includes(option.value)}
+                              onCheckedChange={(checked) => 
+                                handleAccessoryChange(option.value, checked === true)
+                              }
+                            />
+                            <Label htmlFor={`accessory-${option.value}`}>{option.label}</Label>
+                          </div>
+                        ))}
+                      </div>
+                    </ScrollArea>
                   </TabsContent>
                 </Tabs>
               </div>

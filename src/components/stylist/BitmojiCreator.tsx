@@ -30,8 +30,14 @@ import {
   hairStyleOptions,
   hairColorOptions,
   facialFeatureOptions,
+  eyeColorOptions,
+  facialExpressionOptions,
+  accessoryOptions,
   HairStyle,
-  FacialFeature
+  FacialFeature,
+  EyeColor,
+  FacialExpression,
+  Accessory
 } from '@/types/UserProfile';
 import { toast } from '@/hooks/use-toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -59,8 +65,12 @@ const defaultProfile: UserProfile = {
   avatarConfig: {
     hairColor: '#8B4513',
     hairStyle: 'short',
-    facialFeatures: 'neutral',
-    outfit: 'casual'
+    facialFeatures: ['neutral'],
+    eyeColor: 'brown',
+    expression: 'smile',
+    accessories: [],
+    avatarType: 'bitmoji',
+    outfit: 'tshirt-jeans'
   }
 };
 
@@ -89,7 +99,10 @@ const BitmojiCreator = ({
   const selectedStyles = form.watch('stylePreferences');
   const selectedHairStyle = form.watch('avatarConfig.hairStyle') || 'short';
   const selectedHairColor = form.watch('avatarConfig.hairColor') || '#8B4513';
-  const selectedFacialFeature = form.watch('avatarConfig.facialFeatures') || 'neutral';
+  const selectedFacialFeatures = form.watch('avatarConfig.facialFeatures') || [];
+  const selectedEyeColor = form.watch('avatarConfig.eyeColor') || 'brown';
+  const selectedExpression = form.watch('avatarConfig.expression') || 'smile';
+  const selectedAccessories = form.watch('avatarConfig.accessories') || [];
 
   // Get current form values for preview
   const currentProfile = form.watch();
@@ -98,9 +111,9 @@ const BitmojiCreator = ({
     <Drawer open={isOpen} onOpenChange={onOpenChange}>
       <DrawerContent className="max-h-[90vh]">
         <DrawerHeader>
-          <DrawerTitle className="font-serif text-2xl">Create Your Style Avatar</DrawerTitle>
+          <DrawerTitle className="font-serif text-2xl">Create Your Bitmoji Avatar</DrawerTitle>
           <DrawerDescription>
-            Customize your virtual style assistant with your physical attributes and style preferences
+            Customize your virtual style avatar with your physical attributes and style preferences
           </DrawerDescription>
         </DrawerHeader>
 
@@ -108,9 +121,10 @@ const BitmojiCreator = ({
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 pb-10">
               <Tabs value={currentTab} onValueChange={setCurrentTab}>
-                <TabsList className="grid grid-cols-4 mb-4">
+                <TabsList className="grid grid-cols-5 mb-4">
                   <TabsTrigger value="basics">Body</TabsTrigger>
                   <TabsTrigger value="hair">Hair</TabsTrigger>
+                  <TabsTrigger value="face">Face</TabsTrigger>
                   <TabsTrigger value="style">Style</TabsTrigger>
                   <TabsTrigger value="preview">Preview</TabsTrigger>
                 </TabsList>
@@ -132,6 +146,7 @@ const BitmojiCreator = ({
                                     : 'border-gray-200'
                                 }`}
                                 style={{ backgroundColor: option.color }}
+                                data-skin-tone={option.value}
                                 onClick={() => form.setValue('skinTone', option.value)}
                                 aria-label={`Select ${option.label} skin tone`}
                               />
@@ -223,22 +238,113 @@ const BitmojiCreator = ({
                       ))}
                     </div>
                   </div>
-                  
-                  {/* Facial Features Selection */}
+                </TabsContent>
+                
+                <TabsContent value="face" className="space-y-6">
+                  {/* Eye Color Selection */}
                   <div className="space-y-3">
-                    <h3 className="font-medium text-lg">Facial Features</h3>
-                    <RadioGroup 
-                      value={selectedFacialFeature}
-                      onValueChange={(value) => form.setValue('avatarConfig.facialFeatures', value as FacialFeature)}
-                      className="grid grid-cols-2 gap-2"
-                    >
-                      {facialFeatureOptions.map((option) => (
-                        <div key={option.value} className="flex items-center space-x-2">
-                          <RadioGroupItem value={option.value} id={`feature-${option.value}`} />
-                          <Label htmlFor={`feature-${option.value}`}>{option.label}</Label>
+                    <h3 className="font-medium text-lg">Eye Color</h3>
+                    <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
+                      {eyeColorOptions.map((option) => (
+                        <div key={option.value} className="flex flex-col items-center">
+                          <button
+                            type="button"
+                            className={`h-8 w-8 rounded-full border-2 ${
+                              selectedEyeColor === option.value 
+                                ? 'border-black ring-2 ring-brand-pink ring-opacity-50' 
+                                : 'border-gray-200'
+                            }`}
+                            style={{ backgroundColor: option.color }}
+                            onClick={() => form.setValue('avatarConfig.eyeColor', option.value)}
+                            aria-label={`Select ${option.label} eye color`}
+                          />
+                          <span className="text-xs mt-1">{option.label}</span>
                         </div>
                       ))}
-                    </RadioGroup>
+                    </div>
+                  </div>
+                  
+                  {/* Expression Selection */}
+                  <FormField
+                    control={form.control}
+                    name="avatarConfig.expression"
+                    render={({ field }) => (
+                      <FormItem className="space-y-3">
+                        <FormLabel className="text-lg">Expression</FormLabel>
+                        <FormControl>
+                          <RadioGroup 
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                            className="grid grid-cols-2 sm:grid-cols-3 gap-2"
+                          >
+                            {facialExpressionOptions.map((option) => (
+                              <div key={option.value} className="flex items-center space-x-2">
+                                <RadioGroupItem value={option.value} id={`expression-${option.value}`} />
+                                <Label htmlFor={`expression-${option.value}`}>{option.label}</Label>
+                              </div>
+                            ))}
+                          </RadioGroup>
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                  
+                  {/* Facial Features */}
+                  <div className="space-y-3">
+                    <h3 className="font-medium text-lg">Facial Features</h3>
+                    <ScrollArea className="h-40">
+                      <div className="grid grid-cols-2 gap-2">
+                        {facialFeatureOptions.map((option) => (
+                          <div key={option.value} className="flex items-center space-x-2">
+                            <Checkbox 
+                              id={`feature-creator-${option.value}`} 
+                              checked={selectedFacialFeatures.includes(option.value)}
+                              onCheckedChange={(checked) => {
+                                const current = form.getValues('avatarConfig.facialFeatures') || [];
+                                if (checked) {
+                                  form.setValue('avatarConfig.facialFeatures', [...current, option.value]);
+                                } else {
+                                  form.setValue(
+                                    'avatarConfig.facialFeatures', 
+                                    current.filter(f => f !== option.value)
+                                  );
+                                }
+                              }}
+                            />
+                            <Label htmlFor={`feature-creator-${option.value}`}>{option.label}</Label>
+                          </div>
+                        ))}
+                      </div>
+                    </ScrollArea>
+                  </div>
+                  
+                  {/* Accessories */}
+                  <div className="space-y-3">
+                    <h3 className="font-medium text-lg">Accessories</h3>
+                    <ScrollArea className="h-40">
+                      <div className="grid grid-cols-2 gap-2">
+                        {accessoryOptions.map((option) => (
+                          <div key={option.value} className="flex items-center space-x-2">
+                            <Checkbox 
+                              id={`accessory-creator-${option.value}`} 
+                              checked={selectedAccessories.includes(option.value)}
+                              onCheckedChange={(checked) => {
+                                const current = form.getValues('avatarConfig.accessories') || [];
+                                if (checked) {
+                                  form.setValue('avatarConfig.accessories', [...current, option.value]);
+                                } else {
+                                  form.setValue(
+                                    'avatarConfig.accessories', 
+                                    current.filter(a => a !== option.value)
+                                  );
+                                }
+                              }}
+                            />
+                            <Label htmlFor={`accessory-creator-${option.value}`}>{option.label}</Label>
+                          </div>
+                        ))}
+                      </div>
+                    </ScrollArea>
                   </div>
                 </TabsContent>
                 
@@ -278,6 +384,39 @@ const BitmojiCreator = ({
                       </div>
                     </ScrollArea>
                   </div>
+                  
+                  {/* Avatar Type Selection */}
+                  <FormField
+                    control={form.control}
+                    name="avatarConfig.avatarType"
+                    render={({ field }) => (
+                      <FormItem className="space-y-3">
+                        <FormLabel className="text-lg">Avatar Type</FormLabel>
+                        <FormControl>
+                          <RadioGroup 
+                            onValueChange={field.onChange}
+                            defaultValue={field.value || 'bitmoji'}
+                            className="grid grid-cols-2 sm:grid-cols-3 gap-3"
+                          >
+                            {['bitmoji', 'princess', 'casual', 'formal', 'sporty'].map((type) => (
+                              <div 
+                                key={type}
+                                className={`border rounded-lg p-4 flex flex-col items-center cursor-pointer ${
+                                  field.value === type ? 'border-brand-pink bg-pink-50' : ''
+                                }`}
+                                onClick={() => form.setValue('avatarConfig.avatarType', type as any)}
+                              >
+                                <RadioGroupItem value={type} id={`avatar-type-${type}`} className="sr-only" />
+                                <Label htmlFor={`avatar-type-${type}`} className="cursor-pointer">
+                                  {type.charAt(0).toUpperCase() + type.slice(1)}
+                                </Label>
+                              </div>
+                            ))}
+                          </RadioGroup>
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
                 </TabsContent>
                 
                 <TabsContent value="preview" className="space-y-6">
@@ -288,7 +427,7 @@ const BitmojiCreator = ({
                     </div>
                     
                     <div className="mt-4 text-center">
-                      <h3 className="font-medium">Your Style Avatar</h3>
+                      <h3 className="font-medium">Your Bitmoji Avatar</h3>
                       <p className="text-sm text-gray-500 mt-1">
                         {bodyTypeOptions.find(o => o.value === selectedBodyType)?.label} body type
                       </p>

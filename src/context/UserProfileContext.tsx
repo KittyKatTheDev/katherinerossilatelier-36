@@ -11,7 +11,17 @@ interface UserProfileContextType {
 const defaultProfile: UserProfile = {
   skinTone: 'medium',
   bodyType: 'athletic',
-  stylePreferences: ['casual']
+  stylePreferences: ['casual'],
+  avatarConfig: {
+    hairColor: '#8B4513',
+    hairStyle: 'short',
+    facialFeatures: ['neutral'],
+    eyeColor: 'brown',
+    expression: 'smile',
+    accessories: [],
+    avatarType: 'bitmoji',
+    outfit: 'tshirt-jeans'
+  }
 };
 
 const UserProfileContext = createContext<UserProfileContextType>({
@@ -33,6 +43,9 @@ export const UserProfileProvider: React.FC<{ children: React.ReactNode }> = ({ c
         console.error('Failed to parse saved profile', error);
         setProfile(defaultProfile);
       }
+    } else {
+      // If no profile exists yet, use the default
+      setProfile(defaultProfile);
     }
   }, []);
   

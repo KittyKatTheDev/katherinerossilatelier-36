@@ -7,13 +7,16 @@ export interface UserProfile {
   avatarConfig?: {
     hairColor?: string;
     hairStyle?: HairStyle;
-    facialFeatures?: FacialFeature;
+    facialFeatures?: FacialFeature[];
+    eyeColor?: EyeColor;
     outfit?: string;
     avatarType?: AvatarType;
+    expression?: FacialExpression;
+    accessories?: Accessory[];
   };
 }
 
-export type AvatarType = 'princess' | 'casual' | 'formal' | 'sporty';
+export type AvatarType = 'princess' | 'casual' | 'formal' | 'sporty' | 'bitmoji';
 
 export type HairStyle = 
   | 'short' 
@@ -27,7 +30,10 @@ export type HairStyle =
   | 'afro'
   | 'braids'
   | 'bun'
-  | 'ponytail';
+  | 'ponytail'
+  | 'mohawk'
+  | 'buzzcut'
+  | 'sidepart';
 
 export type FacialFeature =
   | 'neutral'
@@ -35,7 +41,37 @@ export type FacialFeature =
   | 'sunglasses'
   | 'beard'
   | 'mustache'
-  | 'freckles';
+  | 'freckles'
+  | 'eyebrows-thick'
+  | 'eyebrows-thin'
+  | 'eyelashes';
+
+export type EyeColor =
+  | 'brown'
+  | 'blue'
+  | 'green'
+  | 'hazel'
+  | 'amber'
+  | 'gray';
+
+export type FacialExpression =
+  | 'smile'
+  | 'laugh'
+  | 'wink'
+  | 'surprise'
+  | 'neutral'
+  | 'sad'
+  | 'angry';
+
+export type Accessory =
+  | 'earrings'
+  | 'necklace'
+  | 'hat'
+  | 'headband'
+  | 'scarf'
+  | 'tie'
+  | 'bowtie'
+  | 'watch';
 
 export type SkinTone = 
   | 'porcelain' 
@@ -174,7 +210,8 @@ export const avatarTypeOptions: Array<{value: AvatarType, label: string, icon: s
   { value: 'princess', label: 'Princess', icon: 'crown' },
   { value: 'casual', label: 'Casual', icon: 'shirt' },
   { value: 'formal', label: 'Formal', icon: 'diamond' },
-  { value: 'sporty', label: 'Sporty', icon: 'star' }
+  { value: 'sporty', label: 'Sporty', icon: 'star' },
+  { value: 'bitmoji', label: 'Bitmoji', icon: 'smile' }
 ];
 
 export const hairStyleOptions: Array<{value: HairStyle, label: string}> = [
@@ -189,7 +226,10 @@ export const hairStyleOptions: Array<{value: HairStyle, label: string}> = [
   { value: 'afro', label: 'Afro' },
   { value: 'braids', label: 'Braids' },
   { value: 'bun', label: 'Bun' },
-  { value: 'ponytail', label: 'Ponytail' }
+  { value: 'ponytail', label: 'Ponytail' },
+  { value: 'mohawk', label: 'Mohawk' },
+  { value: 'buzzcut', label: 'Buzzcut' },
+  { value: 'sidepart', label: 'Side Part' }
 ];
 
 export const facialFeatureOptions: Array<{value: FacialFeature, label: string}> = [
@@ -198,7 +238,40 @@ export const facialFeatureOptions: Array<{value: FacialFeature, label: string}> 
   { value: 'sunglasses', label: 'Sunglasses' },
   { value: 'beard', label: 'Beard' },
   { value: 'mustache', label: 'Mustache' },
-  { value: 'freckles', label: 'Freckles' }
+  { value: 'freckles', label: 'Freckles' },
+  { value: 'eyebrows-thick', label: 'Thick Eyebrows' },
+  { value: 'eyebrows-thin', label: 'Thin Eyebrows' },
+  { value: 'eyelashes', label: 'Eyelashes' }
+];
+
+export const eyeColorOptions: Array<{value: EyeColor, label: string, color: string}> = [
+  { value: 'brown', label: 'Brown', color: '#4E3620' },
+  { value: 'blue', label: 'Blue', color: '#1E90FF' },
+  { value: 'green', label: 'Green', color: '#2E8B57' },
+  { value: 'hazel', label: 'Hazel', color: '#A67B5B' },
+  { value: 'amber', label: 'Amber', color: '#FFBF00' },
+  { value: 'gray', label: 'Gray', color: '#808080' }
+];
+
+export const facialExpressionOptions: Array<{value: FacialExpression, label: string}> = [
+  { value: 'smile', label: 'Smile' },
+  { value: 'laugh', label: 'Laugh' },
+  { value: 'wink', label: 'Wink' },
+  { value: 'surprise', label: 'Surprise' },
+  { value: 'neutral', label: 'Neutral' },
+  { value: 'sad', label: 'Sad' },
+  { value: 'angry', label: 'Angry' }
+];
+
+export const accessoryOptions: Array<{value: Accessory, label: string}> = [
+  { value: 'earrings', label: 'Earrings' },
+  { value: 'necklace', label: 'Necklace' },
+  { value: 'hat', label: 'Hat' },
+  { value: 'headband', label: 'Headband' },
+  { value: 'scarf', label: 'Scarf' },
+  { value: 'tie', label: 'Tie' },
+  { value: 'bowtie', label: 'Bowtie' },
+  { value: 'watch', label: 'Watch' }
 ];
 
 export const hairColorOptions: Array<{value: string, label: string, color: string}> = [
@@ -227,5 +300,10 @@ export const outfitOptions: Array<{value: string, label: string, category: strin
   { value: 'winter-coat', label: 'Winter Coat', category: 'casual' },
   { value: 'gown', label: 'Evening Gown', category: 'formal' },
   { value: 'swimwear', label: 'Swimwear', category: 'sporty' },
-  { value: 'uniform', label: 'Uniform', category: 'formal' }
+  { value: 'uniform', label: 'Uniform', category: 'formal' },
+  { value: 'superhero', label: 'Superhero Costume', category: 'casual' },
+  { value: 'wizard', label: 'Wizard Robe', category: 'casual' },
+  { value: 'ninja', label: 'Ninja Outfit', category: 'sporty' },
+  { value: 'astronaut', label: 'Astronaut Suit', category: 'casual' },
+  { value: 'pirate', label: 'Pirate Costume', category: 'casual' }
 ];
