@@ -14,10 +14,10 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Bot, User, Send, SmileIcon } from 'lucide-react';
 import { stylistResponses } from './stylistResponses';
 import ChatMessage from './ChatMessage';
-import BitmojiCreator from './BitmojiCreator';
 import OutfitDrawer from './OutfitDrawer';
 import { useUserProfile } from '@/context/UserProfileContext';
 import { UserProfile } from '@/types/UserProfile';
+import BitmojiCreator from './BitmojiCreator';
 
 interface Message {
   id: number;
