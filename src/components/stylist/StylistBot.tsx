@@ -17,7 +17,6 @@ import ChatMessage from './ChatMessage';
 import OutfitDrawer from './OutfitDrawer';
 import { useUserProfile } from '@/context/UserProfileContext';
 import { UserProfile } from '@/types/UserProfile';
-import BitmojiCreator from './BitmojiCreator';
 
 interface Message {
   id: number;
@@ -41,7 +40,6 @@ const StylistBot = ({ displayOnHomepage = false }: StylistBotProps) => {
   const [input, setInput] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
-  const [showBitmojiCreator, setShowBitmojiCreator] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { profile, updateProfile, hasProfile } = useUserProfile();
 
@@ -57,7 +55,7 @@ const StylistBot = ({ displayOnHomepage = false }: StylistBotProps) => {
         const profileSuggestionMessage: Message = {
           id: Date.now(),
           sender: 'bot',
-          text: "I notice you haven't set up your style profile yet. Would you like to create your style avatar? This will help me provide more personalized recommendations for your body type and style preferences."
+          text: "I notice you haven't set up your style profile yet. Would you like to tell me about your style preferences? This will help me provide more personalized recommendations for your body type and style preferences."
         };
         setMessages(prev => [...prev, profileSuggestionMessage]);
       }, 1000);
@@ -91,26 +89,6 @@ const StylistBot = ({ displayOnHomepage = false }: StylistBotProps) => {
     setMessages(prev => [...prev, userMessage]);
     setInput('');
     
-    // Check for profile creation keywords
-    const profileCreationKeywords = ['profile', 'avatar', 'bitmoji', 'create profile', 'style profile'];
-    const shouldOpenProfileCreator = profileCreationKeywords.some(keyword => 
-      input.toLowerCase().includes(keyword)
-    );
-    
-    if (shouldOpenProfileCreator) {
-      setTimeout(() => {
-        const botResponse: Message = {
-          id: Date.now() + 1,
-          sender: 'bot',
-          text: "Great! Let's set up your style profile. Click the 'Create Style Avatar' button to get started."
-        };
-        setMessages(prev => [...prev, botResponse]);
-        setIsTyping(false);
-        setTimeout(() => setShowBitmojiCreator(true), 500);
-      }, 1000);
-      return;
-    }
-    
     // Simulate bot typing
     setIsTyping(true);
     
@@ -142,7 +120,7 @@ const StylistBot = ({ displayOnHomepage = false }: StylistBotProps) => {
       }
       
       // Default response if no keywords match
-      return "I'm not sure how to help with that specific question. Would you like to create your style profile so I can give you more personalized recommendations?";
+      return "I'm not sure how to help with that specific question. Would you like to tell me about your style preferences so I can give you more personalized recommendations?";
     }
     
     // Personalized responses based on user profile
